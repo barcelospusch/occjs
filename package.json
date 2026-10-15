@@ -1,0 +1,25 @@
+{
+  "name": "occjs",
+  "version": "0.1.0",
+  "description": "JavaScript library for querying stellar occultation predictions from the LIneA Solar System API.",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "astronomy",
+    "occultation",
+    "stellar-occultations",
+    "asteroids",
+    "linea",
+    "predictions"
+  ],
+  "license": "MIT"
+}
