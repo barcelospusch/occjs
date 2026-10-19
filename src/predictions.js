@@ -1,81 +1,56 @@
-import { request } from "./api.js";
+import { Prediction } from "./prediction.js";
 
-const PARAMETER_NAMES = {
-  startDate: "date_time_after",
-  endDate: "date_time_before",
-  asteroid: "name",
-  asteroidNumber: "number",
-  maxMagnitude: "magnitude_max",
-  minMagnitude: "magnitude_min",
-  minDiameter: "diameter_min",
-  maxDiameter: "diameter_max",
-  minDuration: "event_duration_min",
-  maxDuration: "event_duration_max",
-  minMagnitudeDrop: "magnitude_drop_min",
-  maxMagnitudeDrop: "magnitude_drop_max",
-  dynamicalClass: "dynclass",
-  baseDynamicalClass: "base_dynclass",
-  nighttime: "nightside",
-  radius: "location_radius",
-};
+const defaultPrediction = new Prediction();
 
-function normalizeParams(options) {
-  const params = {};
-
-  for (const [key, value] of Object.entries(options)) {
-    params[PARAMETER_NAMES[key] ?? key] = value;
-  }
-
-  return params;
-}
-
-function extractResults(response) {
-  if (Array.isArray(response)) return response;
-
-  const data = response?.results ?? response?.data;
-
-  if (Array.isArray(data)) return data;
-
-  throw new TypeError("Unexpected occultation list response from LineA.");
-}
-
-function validateId(hashId) {
-  if (typeof hashId !== "string" || !hashId.trim()) {
-    throw new TypeError("A valid occultation hash_id is required.");
-  }
-
-  return encodeURIComponent(hashId);
-}
-
+/**
+ * Queries occultation predictions with filtering and pagination.
+ *
+ * @param {Object} [options]
+ * @param {number|string} [options.limit=100] - Max results or 'all'.
+ * @param {string|Date} [options.startDate] - Start date/time.
+ * @param {string|Date} [options.endDate] - End date/time.
+ * @param {string} [options.asteroid] - Asteroid name.
+ * @param {number} [options.asteroidNumber] - Asteroid number.
+ * @param {number} [options.latitude] - Observer latitude for server-side filter.
+ * @param {number} [options.longitude] - Observer longitude for server-side filter.
+ * @param {number} [options.radius] - Observer radius (km).
+ * @param {boolean} [options.nighttime] - Nightside only.
+ * @param {Function} [options.onProgress] - Callback for pagination progress.
+ * @returns {Promise<Array<Object>>}
+ */
 export async function getPredictions(options = {}) {
-  const { limit = 100, ...filters } = options;
+  const { limit = 100, onProgress = null, ...filters } = options;
 
-  if (!Number.isSafeInteger(limit) || limit < 1) {
-    throw new RangeError("limit must be a positive integer.");
+  if (limit !== "all" && (!Number.isSafeInteger(limit) || limit < 1)) {
+    throw new RangeError("limit must be a positive integer or 'all'.");
   }
 
-  const params = normalizeParams(filters);
-  params.pageSize = limit;
-
-  const response = await request("occultations/", params);
-
-  return extractResults(response).slice(0, limit);
+  return defaultPrediction.getData(filters, { limit, onProgress });
 }
 
+/**
+ * Retrieves details for a single occultation prediction.
+ * @param {string|number} hashId
+ * @returns {Promise<Object>}
+ */
 export async function getPrediction(hashId) {
-  const id = validateId(hashId);
-
-  return request(`occultations/${id}/`);
+  return defaultPrediction.getPrediction(hashId);
 }
 
+/**
+ * Retrieves path coordinates for a prediction.
+ * @param {string|number} hashId
+ * @returns {Promise<Object>}
+ */
 export async function getOccultationPaths(hashId) {
-  const id = validateId(hashId);
-
-  return request(`occultations/${id}/get_occultation_paths/`);
+  return defaultPrediction.getOccultationPaths(hashId);
 }
 
+/**
+ * Retrieves or creates an occultation map.
+ * @param {string|number} hashId
+ * @returns {Promise<Object>}
+ */
 export async function getOccultationMap(hashId) {
-  const id = validateId(hashId);
-
-  return request(`occultations/${id}/get_or_create_map/`);
+  return defaultPrediction.getOccultationMap(hashId);
 }
