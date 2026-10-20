@@ -51,7 +51,30 @@ export interface PredictionQueryParams {
   [key: string]: any;
 }
 
+export type WeatherSummary = {
+  available: false;
+  message: string;
+  forecastStart: string;
+  /** Exclusive UTC upper bound of the forecast window. */
+  forecastEnd: string;
+  details?: string;
+  source: "Open-Meteo";
+  reason: "invalid_event_date" | "outside_forecast_range" | "weather_api_error" | "missing_weather_data";
+} | {
+  available: true;
+  source: "Open-Meteo";
+  latitude: number;
+  longitude: number;
+  time: string;
+  condition: string;
+  weatherCode: number;
+  relativeHumidity: number;
+};
+
 export interface QueryOptions {
+  includeWeather?: boolean;
+  latitude?: number;
+  longitude?: number;
   limit?: number | "all";
   id?: number | string;
   onProgress?: (progress: {
@@ -84,6 +107,7 @@ export interface OccPathCoeff {
 }
 
 export interface OccultationPrediction {
+  weather?: WeatherSummary;
   id: number;
   name: string;
   number?: number;
@@ -191,7 +215,7 @@ export declare class Prediction extends BaseAPI {
   dynamicalClassesWithPrediction(): Promise<string[]>;
   dynamicalSubclassesWithPrediction(): Promise<string[]>;
 
-  getPrediction(id: number | string): Promise<OccultationPrediction>;
+  getPrediction(id: number | string, options?: QueryOptions): Promise<OccultationPrediction>;
   getOccultationPaths(id: number | string): Promise<any>;
   getOccultationMap(id: number | string): Promise<MapResult>;
 
@@ -299,11 +323,12 @@ export declare function generateCoraReport(
 ): Promise<string>;
 
 export declare function getPredictions(
-  options?: PredictionQueryParams & { limit?: number | "all" },
+  options?: PredictionQueryParams & QueryOptions,
 ): Promise<OccultationPrediction[]>;
 
 export declare function getPrediction(
   hashId: string | number,
+  options?: QueryOptions,
 ): Promise<OccultationPrediction>;
 
 export declare function getOccultationPaths(
