@@ -51,6 +51,7 @@ export class BaseAPI {
   } = {}) {
     this.baseUrl = baseUrl.replace(/\/+$/, "");
     this.endpoint = endpoint;
+    if (!Number.isSafeInteger(pageSize) || pageSize < 1) throw new RangeError("pageSize must be a positive integer.");
     this.pageSize = pageSize;
   }
 
@@ -217,6 +218,9 @@ export class BaseAPI {
     } = opts;
 
     const parsedParams = this._parseValues(params);
+    if (inputLimit !== null && inputLimit !== "all" && (!Number.isSafeInteger(inputLimit) || inputLimit < 1)) {
+      throw new RangeError("limit must be a positive integer or 'all'.");
+    }
 
     // If fetching a specific ID
     if (id !== null && id !== undefined) {
@@ -229,7 +233,7 @@ export class BaseAPI {
       return item;
     }
 
-    const effectivePageSize = this.pageSize;
+    let effectivePageSize = this.pageSize;
     parsedParams.pageSize = effectivePageSize;
     parsedParams.page = 1;
 
@@ -258,6 +262,9 @@ export class BaseAPI {
     if (totalCount === 0 || initialResults.length === 0) {
       return [];
     }
+
+    // The server may cap pageSize below the requested value.
+    effectivePageSize = initialResults.length;
 
     let output = [...initialResults];
     const nPages =

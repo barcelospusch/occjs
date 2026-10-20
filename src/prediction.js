@@ -1,11 +1,23 @@
 import { BaseAPI, DEFAULT_BASE_URL, DEFAULT_PAGE_SIZE } from "./base.js";
 import { OccJSError } from "./errors.js";
+import { enrichWeather, validateWeatherOptions } from "./weather.js";
 
 /**
  * Prediction API class for querying stellar occultations.
  * Direct equivalent of Prediction class in Python's lineaSSP package.
  */
 export class Prediction extends BaseAPI {
+  async getData(params = {}, options = {}) {
+    const opts = typeof options === "object" ? options : { limit: options };
+    const { includeWeather = false, latitude = params.latitude ?? params.lat,
+      longitude = params.longitude ?? params.long, ...queryOptions } = opts;
+    if (typeof includeWeather !== "boolean") throw new TypeError("includeWeather must be a boolean.");
+    if (includeWeather) validateWeatherOptions(latitude, longitude);
+    const result = await super.getData(params, queryOptions);
+    return includeWeather
+      ? enrichWeather(result, { latitude, longitude, signal: opts.signal })
+      : result;
+  }
   /**
    * @param {Object} [options]
    * @param {string} [options.baseUrl] - Base URL of the API.
@@ -57,7 +69,11 @@ export class Prediction extends BaseAPI {
       );
     }
 
-    return response.json();
+    try {
+      return await response.json();
+    } catch {
+      throw new OccJSError("LineA API returned an invalid JSON response.", response.status);
+    }
   }
 
   /**
@@ -95,11 +111,11 @@ export class Prediction extends BaseAPI {
    * @param {number|string} id - Occultation ID or hash ID.
    * @returns {Promise<Object>}
    */
-  async getPrediction(id) {
+  async getPrediction(id, options = {}) {
     if (!id) {
       throw new TypeError("A valid prediction ID or hash_id is required.");
     }
-    return this.getData({}, { id });
+    return this.getData({}, { ...options, id });
   }
 
   /**

@@ -1,5 +1,7 @@
 # occjs
 
+Versão **0.3.1**.
+
 > Biblioteca JavaScript / TypeScript para consulta de predições de ocultações estelares e corpos menores do Sistema Solar através da API do **LIneA Solar System Portal**.
 > Projetada com recursos e funções equivalentes ao módulo Python oficial do LineA ([`lineaSSP`](https://solarsystem.linea.org.br/docs/user-guide/python_module/)).
 
@@ -243,6 +245,71 @@ console.log(autoReport);
 
 ---
 
+## 🌦️ Resumo opcional da previsão do tempo
+
+Use `includeWeather: true` para incluir condições do clima em português e umidade
+relativa (%) junto a cada evento. O padrão é `false`. A biblioteca recebe essa
+escolha como parâmetro; aplicações podem perguntar ao usuário antes da consulta.
+
+Para um exemplo interativo que pergunta se deseja o resumo e solicita as
+coordenadas, execute `node examples/preds_with_weather.js`.
+Quando o resumo é solicitado, esse exemplo limita a busca aos próximos 16 dias
+e informa quando não há eventos nesse período.
+
+```javascript
+import { getPredictions, getPrediction, Prediction } from "@dimitri.pusch/occjs";
+
+// Limite a busca ao alcance da previsão, contando a partir de hoje em UTC.
+const forecastEnd = new Date();
+forecastEnd.setUTCHours(0, 0, 0, 0);
+forecastEnd.setUTCDate(forecastEnd.getUTCDate() + 16);
+const events = await getPredictions({
+  startDate: new Date(),
+  endDate: new Date(forecastEnd.getTime() - 1),
+  latitude: -23.55,
+  longitude: -46.63,
+  includeWeather: true,
+  limit: 10,
+});
+console.log(events[0]?.weather);
+// { available: true, source: 'Open-Meteo', latitude: -23.55,
+//   longitude: -46.63, time: '...Z', condition: 'chuva',
+//   weatherCode: 63, relativeHumidity: 82 }
+
+const event = await getPrediction("HASH_DO_EVENTO", {
+  includeWeather: true, latitude: -23.55, longitude: -46.63,
+});
+const api = new Prediction();
+await api.byName("Chariklo", {
+  limit: 10, includeWeather: true, latitude: -23.55, longitude: -46.63,
+});
+// Em getData, as coordenadas também podem ser fornecidas no primeiro argumento.
+```
+
+O SDK `openmeteo` é instalado como dependência. Os dados são da
+[Open-Meteo](https://open-meteo.com/en/docs); consulte seus termos de uso para uso
+comercial. As coordenadas do observador são obrigatórias quando o clima está
+ativado. O resumo corresponde à hora UTC que contém o horário do evento (datas
+de eventos sem fuso são interpretadas como UTC), com uma consulta meteorológica
+compartilhada entre os eventos da busca.
+
+A previsão cobre até 16 dias, conforme disponibilidade do modelo. Eventos fora
+desse intervalo retornam `weather.available: false` e
+`reason: 'outside_forecast_range'`. Falhas do serviço retornam
+`reason: 'weather_api_error'`; dados ausentes retornam `missing_weather_data` e
+datas inválidas retornam `invalid_event_date`. O evento é preservado nesses casos.
+Sem `includeWeather`, nenhuma consulta meteorológica é feita.
+
+Eventos de meses ou anos futuros ainda não têm previsão meteorológica disponível.
+A consulta da biblioteca preserva esses eventos e informa o motivo em português
+em `weather.message`, com o intervalo UTC em `forecastStart` e `forecastEnd`
+(limite final exclusivo). Em falhas do serviço, `details` traz o erro recebido.
+O clima atual não é usado como previsão para uma data futura.
+
+Nesta versão também foram corrigidas a paginação quando o servidor limita o
+tamanho das páginas, a validação de limites e a resposta JSON inválida nos
+subendpoints de predição.
+
 ## 🧪 Testes
 
 Para executar os testes unitários e de integração com a API ao vivo:
@@ -255,4 +322,4 @@ node --test
 
 ## 📄 Licença
 
-MIT © Dimitri Barcelos Pusch & colaboradores.
+MIT © Barcelos-Pusch, D.

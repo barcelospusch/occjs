@@ -1,6 +1,6 @@
 {
   "name": "@dimitri.pusch/occjs",
-  "version": "0.2.0",
+  "version": "0.3.1",
   "description": "JavaScript library for querying stellar occultation predictions from the LIneA Solar System API.",
   "type": "module",
   "main": "./src/index.js",
@@ -32,5 +32,8 @@
     "lineassp",
     "predictions"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "openmeteo": "^1.2.3"
+  }
 }
