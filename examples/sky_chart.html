@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Aladin Sky Chart with Zoom</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      #chart {
+        display: block;
+        margin-top: 10px;
+        max-width: 100%;
+      }
+      .controls {
+        margin-top: 10px;
+      }
+      button {
+        margin-right: 5px;
+        padding: 5px 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Aladin Sky Chart – Zoomable</h1>
+    <div class="controls">
+      <button id="zoom-in-strong">++</button>
+      <button id="zoom-in">+</button>
+      <button id="zoom-out">-</button>
+      <button id="zoom-out-strong">--</button>
+    </div>
+    <img id="chart" alt="Sky chart" />
+
+    <script type="module">
+      import { exportSkyChart } from "../src/skyChart.js";
+
+      // Target star coordinates (example values – replace as needed)
+      const ra = 86.42874873; // degrees
+      const dec = 7.551638; // degrees
+
+      // Initial parameters
+      let fov = 0.5; // degrees – smaller = more zoomed in
+      const width = 800;
+      const height = 600;
+      const survey = "P/DSS2/color";
+
+      const img = document.getElementById("chart");
+      const zoomInStrongBtn = document.getElementById("zoom-in-strong");
+      const zoomInBtn = document.getElementById("zoom-in");
+      const zoomOutBtn = document.getElementById("zoom-out");
+      const zoomOutStrongBtn = document.getElementById("zoom-out-strong");
+
+      // Helper to (re)load the chart with the current fov
+      async function loadChart() {
+        zoomInBtn.disabled = true;
+        zoomOutBtn.disabled = true;
+        zoomInStrongBtn.disabled = true;
+        zoomOutStrongBtn.disabled = true;
+        try {
+          const dataUrl = await exportSkyChart(ra, dec, {
+            width,
+            height,
+            fov,
+            survey,
+          });
+          img.src = dataUrl;
+        } catch (e) {
+          console.error("Failed to load sky chart:", e);
+        } finally {
+          zoomInBtn.disabled = false;
+          zoomOutBtn.disabled = false;
+          zoomInStrongBtn.disabled = false;
+          zoomOutStrongBtn.disabled = false;
+        }
+      }
+
+      // Zoom handlers – adjust fov by 20% each click (clamp to reasonable range)
+      zoomInBtn.addEventListener("click", () => {
+        fov = Math.max(0.05, fov * 0.8); // zoom in => smaller fov
+        loadChart();
+      });
+
+      zoomInStrongBtn.addEventListener("click", () => {
+        fov = Math.max(0.05, fov * 0.5);
+        loadChart();
+      });
+
+      zoomOutBtn.addEventListener("click", () => {
+        fov = Math.min(5, fov * 1.25); // zoom out => larger fov
+        loadChart();
+      });
+
+      zoomOutStrongBtn.addEventListener("click", () => {
+        fov = Math.min(5, fov * 2);
+        loadChart();
+      });
+
+      // Initial load
+      loadChart();
+    </script>
+  </body>
+</html>

@@ -1,6 +1,6 @@
 # occjs
 
-Versão **0.3.1**.
+Versão **0.3.2**.
 
 > Biblioteca JavaScript / TypeScript para consulta de predições de ocultações estelares e corpos menores do Sistema Solar através da API do **LIneA Solar System Portal**.
 > Projetada com recursos e funções equivalentes ao módulo Python oficial do LineA ([`lineaSSP`](https://solarsystem.linea.org.br/docs/user-guide/python_module/)).
@@ -309,6 +309,27 @@ O clima atual não é usado como previsão para uma data futura.
 Nesta versão também foram corrigidas a paginação quando o servidor limita o
 tamanho das páginas, a validação de limites e a resposta JSON inválida nos
 subendpoints de predição.
+
+## 🪐 Sky Chart Generation
+
+A new utility `generateSkyChart` allows you to obtain an interactive sky chart image with a marker at a target star using the CDS `hips2fits` service.
+
+```javascript
+import { generateSkyChart } from './skyChart.js';
+
+(async () => {
+  const pngUrl = await generateSkyChart(210.8023, 54.34875, {
+    width: 1024,
+    height: 768,
+    fov: 0.4,
+  });
+  const img = document.createElement('img');
+  img.src = pngUrl;
+  document.body.appendChild(img);
+})();
+```
+
+The function returns a **data URL** (`image/png`) that can be displayed directly or downloaded.
 
 ## 🧪 Testes
 
