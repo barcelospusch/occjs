@@ -36,5 +36,12 @@
   "dependencies": {
     "aladin-lite": "^3.9.2-beta",
     "openmeteo": "^1.2.3"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/barcelospusch/occjs.git"
   }
 }
