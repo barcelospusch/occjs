@@ -297,6 +297,26 @@ export declare function geofilter(
   extraOptions?: { nElements?: number; checkNighttime?: boolean },
 ): OccultationPrediction[];
 
+export type PredictionMapInput = number | string |
+  Required<Pick<OccultationPrediction, "date_time" | "occ_path_coeff">> |
+  OccultationPrediction;
+
+export interface PredictionMapOptions {
+  baseUrl?: string;
+}
+
+/** Returns an HTML document with an orthographic projection. */
+export declare function generateGlobalMap(
+  input: PredictionMapInput,
+  options?: PredictionMapOptions,
+): Promise<string>;
+
+/** Returns an HTML document with an interactive Leaflet map. */
+export declare function generateInteractiveMap(
+  input: PredictionMapInput,
+  options?: PredictionMapOptions,
+): Promise<string>;
+
 export declare function generateMap(
   data: any,
   options?: GenerateMapOptions,

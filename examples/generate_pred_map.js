@@ -6,6 +6,10 @@ const prediction = new Prediction();
 const preds = await prediction.byName("Chariklo", { limit: 1 });
 const event = Array.isArray(preds) ? preds[0] : preds;
 
+if (!event) {
+  throw new Error("Nenhuma predição encontrada para Chariklo.");
+}
+
 console.log("Evento obtido:", event.name, event.date_time);
 
 // Gera ou recupera o mapa de ocultação

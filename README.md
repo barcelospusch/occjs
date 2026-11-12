@@ -1,6 +1,6 @@
 # occjs
 
-Versão **0.3.2**.
+Versão **0.4.0**.
 
 > Biblioteca JavaScript / TypeScript para consulta de predições de ocultações estelares e corpos menores do Sistema Solar através da API do **LIneA Solar System Portal**.
 > Projetada com recursos e funções equivalentes ao módulo Python oficial do LineA ([`lineaSSP`](https://solarsystem.linea.org.br/docs/user-guide/python_module/)).
@@ -14,6 +14,45 @@ npm install @dimitri.pusch/occjs
 ```
 
 Compatível com **Node.js >= 18**, navegadores modernos, Bun e Deno. Suporte nativo a ESM e tipagens TypeScript (`index.d.ts`).
+
+---
+
+## Documentação
+
+- [Mapas de predição](#mapas-de-predição)
+- [Páginas da GitHub Wiki](wiki/Home.md)
+
+## Mapas de predição
+
+| Função | Resultado |
+| --- | --- |
+| `generateGlobalMap` | HTML com globo ortográfico, fronteiras, grade e região noturna. |
+| `generateInteractiveMap` | HTML com mapa Leaflet, zoom, deslocamento, botão para restaurar a vista e horários nos marcadores. |
+| `generateMap` | Metadados e URL da imagem gerada pelo LIneA, com download opcional no Node.js. |
+
+As duas visualizações HTML exibem a linha central da sombra, o instante de máxima aproximação (CA), marcadores em intervalos de 60 segundos e o sentido do movimento. Ambas aceitam um ID, um hash ou um objeto com `date_time` e `occ_path_coeff`.
+
+```js
+import { writeFile } from "node:fs/promises";
+import { generateGlobalMap, generateInteractiveMap, Prediction } from "@dimitri.pusch/occjs";
+
+const prediction = await new Prediction().getPrediction("ID_DO_EVENTO");
+await Promise.all([
+  writeFile("global.html", await generateGlobalMap(prediction)),
+  writeFile("interactive.html", await generateInteractiveMap(prediction)),
+]);
+```
+
+Abra os arquivos no navegador com conexão à internet. O globo usa D3, TopoJSON e as fronteiras do World Atlas. O mapa interativo carrega Leaflet via CDN e usa o mapa-base do OpenStreetMap.
+
+### Imagem do LIneA
+
+```javascript
+import { generateMap } from "@dimitri.pusch/occjs";
+
+const mapInfo = await generateMap("ID_DO_EVENTO", { path: "./maps" });
+console.log(mapInfo.url);
+```
 
 ---
 
@@ -185,22 +224,7 @@ const filtered = geofilter(predictions, -23.55, -46.63, 200);
 
 ---
 
-### 7. Gerando ou Obtendo Mapas de Ocultação com `generateMap`
-
-```javascript
-import { generateMap } from "@dimitri.pusch/occjs";
-
-// Obtém o mapa de um evento (ou array de eventos)
-const mapInfo = await generateMap(filtered[0]);
-console.log("URL da imagem do mapa:", mapInfo.url);
-
-// No Node.js, você pode salvar a imagem diretamente em disco:
-await generateMap(filtered, { path: "./maps" });
-```
-
----
-
-### 8. Gerando Relatórios nos Formatos IOTA e CORA
+### 7. Gerando Relatórios nos Formatos IOTA e CORA
 
 A biblioteca permite gerar relatórios técnicos padronizados para predições de ocultações e asteroides nos formatos da **IOTA** (*International Occultation Timing Association*) e da **CORA** (*Collaborative Occultation Resources & Archive*):
 
@@ -310,26 +334,9 @@ Nesta versão também foram corrigidas a paginação quando o servidor limita o
 tamanho das páginas, a validação de limites e a resposta JSON inválida nos
 subendpoints de predição.
 
-## 🪐 Sky Chart Generation
+## Carta celeste
 
-A new utility `generateSkyChart` allows you to obtain an interactive sky chart image with a marker at a target star using the CDS `hips2fits` service.
-
-```javascript
-import { generateSkyChart } from './skyChart.js';
-
-(async () => {
-  const pngUrl = await generateSkyChart(210.8023, 54.34875, {
-    width: 1024,
-    height: 768,
-    fov: 0.4,
-  });
-  const img = document.createElement('img');
-  img.src = pngUrl;
-  document.body.appendChild(img);
-})();
-```
-
-The function returns a **data URL** (`image/png`) that can be displayed directly or downloaded.
+O exemplo no navegador usa o serviço CDS HiPS2FITS para gerar uma imagem PNG com uma marca na estrela de referência. Veja o [guia e o código da carta celeste](wiki/Carta-celeste.md).
 
 ## 🧪 Testes
 
