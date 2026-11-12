@@ -33,7 +33,7 @@
     <img id="chart" alt="Sky chart" />
 
     <script type="module">
-      import { exportSkyChart } from "../src/skyChart.js";
+      import { generateSkyChart } from "../src/skyChart.js";
 
       // Target star coordinates (example values – replace as needed)
       const ra = 86.42874873; // degrees
@@ -58,7 +58,7 @@
         zoomInStrongBtn.disabled = true;
         zoomOutStrongBtn.disabled = true;
         try {
-          const dataUrl = await exportSkyChart(ra, dec, {
+          const dataUrl = await generateSkyChart(ra, dec, {
             width,
             height,
             fov,

@@ -15,7 +15,7 @@ export {
   calculatePathVisibility,
 } from "./geofilter.js";
 
-export { generateMap } from "./maps.js";
+export { generateMap, generateGlobalMap, generateInteractiveMap } from "./maps.js";
 
 // Reporting tools (IOTA & CORA formats)
 export {

@@ -73,3 +73,4 @@ export async function generateMap(data, options = {}) {
 
   return isArray ? results : results[0];
 }
+export { generateGlobalMap, generateInteractiveMap } from "./predictionMaps.js";
