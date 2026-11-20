@@ -80,6 +80,7 @@ function mapDocument(data, title, assets, script) {
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${title}</title>
 ${assets}
@@ -164,10 +165,17 @@ const leafletAssets = `
 
 const leafletScript = `
 const map = L.map("map", { minZoom: 1 });
-L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  maxZoom: 19,
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-}).addTo(map);
+const tiles = L.tileLayer(data.tileLayer.url, {
+  maxZoom: data.tileLayer.maxZoom,
+  attribution: data.tileLayer.attribution,
+  referrerPolicy: "strict-origin-when-cross-origin",
+  updateWhenIdle: true,
+});
+tiles.on("tileerror", () => {
+  document.getElementById("error").textContent =
+    "Could not load map tiles. Check the provider access, network and Referer header. Serve this map over HTTP/HTTPS or configure tileLayer for your application.";
+});
+tiles.addTo(map);
 const near = (lon, reference) => reference + ((lon - reference + 180) % 360 + 360) % 360 - 180;
 const bounds = L.latLngBounds([]);
 const lines = data.segments.map(line => {
@@ -251,6 +259,22 @@ export async function generateGlobalMap(input, options) {
 }
 
 /** Generates an HTML document with an interactive Leaflet map of one prediction. */
-export async function generateInteractiveMap(input, options) {
-  return mapDocument(await loadMapData(input, options), "Interactive occultation map", leafletAssets, leafletScript);
+export async function generateInteractiveMap(input, options = {}) {
+  const tileLayer = {
+    url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19,
+    ...options.tileLayer,
+  };
+  if (typeof tileLayer.url !== "string" || !tileLayer.url.trim() ||
+      typeof tileLayer.attribution !== "string" || !tileLayer.attribution.trim() ||
+      !Number.isInteger(tileLayer.maxZoom) || tileLayer.maxZoom < 1) {
+    throw new TypeError("tileLayer requires a URL, visible attribution and a positive integer maxZoom.");
+  }
+  if (options.tileLayer?.url && options.tileLayer.url !== "https://tile.openstreetmap.org/{z}/{x}/{y}.png" &&
+      !options.tileLayer.attribution?.trim()) {
+    throw new TypeError("A custom tile URL requires its provider attribution.");
+  }
+  const data = await loadMapData(input, options);
+  return mapDocument({ ...data, tileLayer }, "Interactive occultation map", leafletAssets, leafletScript);
 }

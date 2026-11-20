@@ -5,7 +5,7 @@ Na raiz do repositório, execute `node examples/previsao-do-tempo.js`. Os blocos
 A opção `includeWeather: true` consulta o Open-Meteo para a hora UTC de cada evento nas coordenadas do observador. O alcance é de até 16 dias a partir do início do dia UTC. O resultado informa a condição em português e a umidade relativa quando disponíveis.
 
 ```js
-import { getPredictions, getPrediction, Prediction } from "@dimitri.pusch/occjs";
+import { getPredictions, getPrediction, Prediction } from "@occjs/occjs";
 
 const weather = { includeWeather: true, latitude: -23.55, longitude: -46.63 };
 const startDate = new Date();

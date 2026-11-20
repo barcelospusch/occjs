@@ -8,7 +8,7 @@ Na raiz do repositório, execute `node examples/api-e-erros.js`. Os blocos abaix
 import {
   LineASSP, BaseAPI, DEFAULT_BASE_URL, DEFAULT_PAGE_SIZE,
   request, OccJSError, InvalidDatetimeFormatError,
-} from "@dimitri.pusch/occjs";
+} from "@occjs/occjs";
 
 const client = new LineASSP({ baseUrl: DEFAULT_BASE_URL, pageSize: DEFAULT_PAGE_SIZE });
 const catalog = new BaseAPI({ baseUrl: DEFAULT_BASE_URL, endpoint: "/api/asteroids" });

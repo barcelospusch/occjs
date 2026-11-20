@@ -1,6 +1,6 @@
 # occjs
 
-Versão **0.4.1**.
+Versão **0.1.1**.
 
 > Biblioteca JavaScript / TypeScript para consulta de predições de ocultações estelares e corpos menores do Sistema Solar através da API do **LIneA Solar System Portal**.
 > Projetada com recursos e funções equivalentes ao módulo Python oficial do LineA ([`lineaSSP`](https://solarsystem.linea.org.br/docs/user-guide/python_module/)).
@@ -10,7 +10,7 @@ Versão **0.4.1**.
 ## 🚀 Instalação
 
 ```bash
-npm install @dimitri.pusch/occjs
+npm install @occjs/occjs
 ```
 
 Compatível com **Node.js >= 18**, navegadores modernos, Bun e Deno. Suporte nativo a ESM e tipagens TypeScript (`index.d.ts`).
@@ -34,7 +34,7 @@ As duas visualizações HTML exibem a linha central da sombra, o instante de má
 
 ```js
 import { writeFile } from "node:fs/promises";
-import { generateGlobalMap, generateInteractiveMap, Prediction } from "@dimitri.pusch/occjs";
+import { generateGlobalMap, generateInteractiveMap, Prediction } from "@occjs/occjs";
 
 const prediction = await new Prediction().getPrediction("ID_DO_EVENTO");
 await Promise.all([
@@ -45,10 +45,12 @@ await Promise.all([
 
 Abra os arquivos no navegador com conexão à internet. O globo usa D3, TopoJSON e as fronteiras do World Atlas. O mapa interativo carrega Leaflet via CDN e usa o mapa-base do OpenStreetMap.
 
+O mapa Leaflet envia a origem HTTP nas requisições dos tiles. Para incorporar a visualização, sirva o HTML por HTTP/HTTPS e use uma URL no iframe. Veja as [instruções para erro 403 e configuração de provedores](wiki/Mapas-de-predicao.md#tiles-bloqueados-com-erro-403).
+
 ### Imagem do LIneA
 
 ```javascript
-import { generateMap } from "@dimitri.pusch/occjs";
+import { generateMap } from "@occjs/occjs";
 
 const mapInfo = await generateMap("ID_DO_EVENTO", { path: "./maps" });
 console.log(mapInfo.url);
@@ -87,7 +89,7 @@ O `occjs` implementa as classes, métodos e funções utilitárias correspondent
 ### 1. Inicializando as APIs
 
 ```javascript
-import { Prediction, Asteroid } from "@dimitri.pusch/occjs";
+import { Prediction, Asteroid } from "@occjs/occjs";
 
 const predictionApi = new Prediction();
 const asteroidApi = new Asteroid();
@@ -96,7 +98,7 @@ const asteroidApi = new Asteroid();
 Você também pode utilizar o cliente unificado `LineASSP`:
 
 ```javascript
-import { LineASSP } from "@dimitri.pusch/occjs";
+import { LineASSP } from "@occjs/occjs";
 
 const linea = new LineASSP();
 // linea.prediction e linea.asteroid
@@ -107,7 +109,7 @@ const linea = new LineASSP();
 ### 2. Buscando Asteroides por Nome
 
 ```javascript
-import { Asteroid } from "@dimitri.pusch/occjs";
+import { Asteroid } from "@occjs/occjs";
 
 const asteroidApi = new Asteroid();
 const ceres = await asteroidApi.byName("Ceres");
@@ -134,7 +136,7 @@ const da1950 = await asteroidApi.withPrediction("1950 DA");
 ### 3. Listando Asteroides com Predições Disponíveis
 
 ```javascript
-import { Prediction } from "@dimitri.pusch/occjs";
+import { Prediction } from "@occjs/occjs";
 
 const predictionApi = new Prediction();
 const asteroids = await predictionApi.asteroidsWithPrediction();
@@ -148,7 +150,7 @@ console.log(asteroids.slice(0, 5));
 ### 4. Predições de Ocultação por Nome de Asteroide
 
 ```javascript
-import { Prediction } from "@dimitri.pusch/occjs";
+import { Prediction } from "@occjs/occjs";
 
 const predictionApi = new Prediction();
 
@@ -174,7 +176,7 @@ console.log(`Encontradas ${predictions.length} predições.`);
 ### 5. Predições por Intervalo de Datas e Parâmetros
 
 ```javascript
-import { Prediction } from "@dimitri.pusch/occjs";
+import { Prediction } from "@occjs/occjs";
 
 const predictionApi = new Prediction();
 
@@ -197,7 +199,7 @@ const predictions = await predictionApi.getData(params, { limit: 100 });
 O `geofilter` calcula com precisão esférica se a faixa de sombra/caminho da ocultação (`occ_path_coeff`) passa a uma distância menor ou igual a `radius` (em km) do observador, considerando também a condição noturna (posição solar):
 
 ```javascript
-import { Prediction, geofilter } from "@dimitri.pusch/occjs";
+import { Prediction, geofilter } from "@occjs/occjs";
 
 const predictionApi = new Prediction();
 
@@ -236,7 +238,7 @@ import {
   formatCoraReport,
   generateIotaReport,
   generateCoraReport,
-} from "@dimitri.pusch/occjs";
+} from "@occjs/occjs";
 
 const predictionApi = new Prediction();
 const asteroidApi = new Asteroid();
@@ -281,7 +283,7 @@ Quando o resumo é solicitado, esse exemplo limita a busca aos próximos 16 dias
 e informa quando não há eventos nesse período.
 
 ```javascript
-import { getPredictions, getPrediction, Prediction } from "@dimitri.pusch/occjs";
+import { getPredictions, getPrediction, Prediction } from "@occjs/occjs";
 
 // Limite a busca ao alcance da previsão, contando a partir de hoje em UTC.
 const forecastEnd = new Date();

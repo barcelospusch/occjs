@@ -5,7 +5,7 @@ Na raiz do repositório, execute `node examples/asteroides.js`. Os blocos abaixo
 ### Busca e classificação
 
 ```js
-import { Asteroid } from "@dimitri.pusch/occjs";
+import { Asteroid } from "@occjs/occjs";
 
 const asteroid = new Asteroid();
 console.log(await asteroid.getData({}, { limit: 3 }));

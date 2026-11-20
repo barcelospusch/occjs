@@ -3,11 +3,11 @@
 Instale o pacote em um projeto ESM com Node.js 18 ou posterior. Para rodar os exemplos a partir de um clone do repositório, execute `npm ci` na raiz. Os exemplos de consulta precisam de acesso ao LIneA.
 
 ```bash
-npm install @dimitri.pusch/occjs
+npm install @occjs/occjs
 ```
 
 ```js
-import { LineASSP } from "@dimitri.pusch/occjs";
+import { LineASSP } from "@occjs/occjs";
 
 const { prediction, asteroid } = new LineASSP();
 console.log(await asteroid.byName("Chariklo"));
