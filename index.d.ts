@@ -305,6 +305,15 @@ export interface PredictionMapOptions {
   baseUrl?: string;
 }
 
+export interface InteractiveMapOptions extends PredictionMapOptions {
+  /** Custom providers must include their required attribution HTML. */
+  tileLayer?: {
+    url: string;
+    attribution: string;
+    maxZoom?: number;
+  };
+}
+
 /** Returns an HTML document with an orthographic projection. */
 export declare function generateGlobalMap(
   input: PredictionMapInput,
@@ -314,7 +323,7 @@ export declare function generateGlobalMap(
 /** Returns an HTML document with an interactive Leaflet map. */
 export declare function generateInteractiveMap(
   input: PredictionMapInput,
-  options?: PredictionMapOptions,
+  options?: InteractiveMapOptions,
 ): Promise<string>;
 
 export declare function generateMap(

@@ -14,7 +14,7 @@ Execute `node examples/mapas-html.js` para gerar os dois mapas com uma trajetór
 
 ```js
 import { writeFile } from "node:fs/promises";
-import { generateGlobalMap, generateInteractiveMap, Prediction } from "@dimitri.pusch/occjs";
+import { generateGlobalMap, generateInteractiveMap, Prediction } from "@occjs/occjs";
 
 const id = process.argv[2];
 const prediction = id ? await new Prediction().getPrediction(id) : {
@@ -44,7 +44,7 @@ Ao passar um ID ou hash, use `{ baseUrl }` como segundo argumento para consultar
 Execute `node examples/generate_pred_map.js` para buscar uma predição do Chariklo e obter os metadados da imagem. O trecho abaixo mostra também o download para uma pasta no Node.js.
 
 ```js
-import { generateMap } from "@dimitri.pusch/occjs";
+import { generateMap } from "@occjs/occjs";
 
 const image = await generateMap("ID_DO_EVENTO", {
   path: "./maps",
@@ -52,3 +52,37 @@ const image = await generateMap("ID_DO_EVENTO", {
 });
 console.log(image.url, image.localPath);
 ```
+
+
+## Tiles bloqueados com erro 403
+
+O mapa define `strict-origin-when-cross-origin` no HTML e nas imagens da camada Leaflet para permitir que o navegador envie a origem da aplicação no cabeçalho `Referer`. O cache HTTP permanece sob controle do navegador. A camada aguarda o fim do deslocamento para solicitar novos tiles.
+
+Sirva o HTML por HTTP/HTTPS. Na raiz do projeto, execute `python -m http.server 8000` e abra `http://localhost:8000/interactive.html`. Arquivos abertos por `file://`, documentos `data:` e iframes com origem opaca podem ficar sem uma origem HTTP válida para identificar a aplicação.
+
+Para incorporar em outro projeto, hospede o HTML gerado em uma rota e use essa URL no iframe.
+
+```html
+<iframe
+  src="/maps/interactive.html"
+  title="Caminho da sombra"
+  referrerpolicy="strict-origin-when-cross-origin"
+  style="width: 100%; height: 600px; border: 0"
+></iframe>
+```
+
+Se o iframe usar `sandbox`, permita scripts e preserve uma origem HTTP válida. Confira no painel Network do navegador o `Referer` da requisição a `tile.openstreetmap.org`. Extensões de privacidade, proxies e o projeto hospedeiro também podem remover esse cabeçalho. Uma resposta 403 pode ter outras causas, como bloqueio por tráfego ou falta de atribuição.
+
+A API também permite configurar um provedor contratado ou hospedado pela aplicação. Substitua a URL ilustrativa abaixo pela URL real e inclua a atribuição exigida pelo provedor.
+
+```js
+const html = await generateInteractiveMap(prediction, {
+  tileLayer: {
+    url: "https://maps.example.org/{z}/{x}/{y}.png",
+    attribution: "© Seu provedor e respectivos contribuidores",
+    maxZoom: 18,
+  },
+});
+```
+
+A atribuição deve ser visível. O serviço padrão exige identificação válida, respeito ao cache e solicitações limitadas à visualização interativa. Consulte as [causas de bloqueio](https://wiki.openstreetmap.org/wiki/Blocked_tiles) e a [política de tiles](https://operations.osmfoundation.org/policies/tiles/).

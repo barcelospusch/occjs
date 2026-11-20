@@ -7,7 +7,7 @@ Na raiz do repositório, execute `node examples/visibilidade.js`. Os blocos abai
 O LIneA pode restringir a consulta por localização, raio em quilômetros e lado noturno.
 
 ```js
-import { getPredictions } from "@dimitri.pusch/occjs";
+import { getPredictions } from "@occjs/occjs";
 
 const candidates = await getPredictions({
   latitude: -23.55,
@@ -27,7 +27,7 @@ console.log(candidates);
 import {
   geofilter, visibilityFromCoeff, buildPathFromCoeff, calculatePathVisibility,
   isNighttime, pathArc, polyval,
-} from "@dimitri.pusch/occjs";
+} from "@occjs/occjs";
 
 const latitude = -23.55;
 const longitude = -46.63;

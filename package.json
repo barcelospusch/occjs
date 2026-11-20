@@ -1,15 +1,38 @@
 {
-  "name": "@dimitri.pusch/occjs",
-  "version": "0.4.0",
+  "name": "@occjs/occjs",
+  "version": "0.1.1",
   "description": "JavaScript library for querying stellar occultation predictions from the LIneA Solar System API.",
+  "keywords": [
+    "astronomy",
+    "occultation",
+    "stellar-occultations",
+    "asteroids",
+    "linea",
+    "lineassp",
+    "predictions"
+  ],
+  "homepage": "https://github.com/barcelospusch/occjs#readme",
+  "bugs": {
+    "url": "https://github.com/barcelospusch/occjs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/barcelospusch/occjs.git"
+  },
+  "license": "MIT",
+  "author": "dimitri.pusch",
   "type": "module",
-  "main": "./src/index.js",
-  "types": "./index.d.ts",
   "exports": {
     ".": {
       "types": "./index.d.ts",
       "import": "./src/index.js"
     }
+  },
+  "main": "./src/index.js",
+  "types": "./index.d.ts",
+  "directories": {
+    "example": "examples",
+    "test": "test"
   },
   "files": [
     "src",
@@ -20,28 +43,15 @@
     "start": "node examples/server.js",
     "example": "node examples/server.js"
   },
-  "engines": {
-    "node": ">=18"
-  },
-  "keywords": [
-    "astronomy",
-    "occultation",
-    "stellar-occultations",
-    "asteroids",
-    "linea",
-    "lineassp",
-    "predictions"
-  ],
-  "license": "MIT",
   "dependencies": {
     "aladin-lite": "^3.9.2-beta",
     "openmeteo": "^1.2.3"
   },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+  "engines": {
+    "node": ">=18"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/barcelospusch/occjs.git"
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "@occjs:registry": "https://registry.npmjs.org/"
   }
 }

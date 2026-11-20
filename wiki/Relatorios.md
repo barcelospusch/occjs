@@ -8,7 +8,7 @@ Os formatadores síncronos recebem um objeto. As funções assíncronas também 
 import {
   Prediction, Asteroid, formatIotaReport, formatCoraReport,
   generateIotaReport, generateCoraReport,
-} from "@dimitri.pusch/occjs";
+} from "@occjs/occjs";
 
 const event = { id: 1, name: "Chariklo", date_time: "2026-11-12T03:00:00Z" };
 const observer = { observerName: "Ana Silva", latitude: -23.55, longitude: -46.63 };

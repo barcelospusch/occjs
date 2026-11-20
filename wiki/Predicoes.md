@@ -7,7 +7,7 @@ As consultas por nome, número ou designação podem devolver um objeto quando e
 ### Busca por objeto
 
 ```js
-import { Prediction } from "@dimitri.pusch/occjs";
+import { Prediction } from "@occjs/occjs";
 
 const prediction = new Prediction();
 console.log(await prediction.byName("Chariklo", { limit: 3 }));
@@ -54,7 +54,7 @@ if (first) {
 ### Funções de conveniência
 
 ```js
-import { getPredictions, getPrediction, getOccultationPaths, getOccultationMap } from "@dimitri.pusch/occjs";
+import { getPredictions, getPrediction, getOccultationPaths, getOccultationMap } from "@occjs/occjs";
 
 const [event] = await getPredictions({ asteroid: "Chariklo", limit: 1 });
 if (event) {
