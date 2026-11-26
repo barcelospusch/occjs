@@ -241,6 +241,108 @@ export interface IotaReportOptions {
   remarks?: string;
 }
 
+export interface HorizonsObjectResponse {
+  result: string;
+  signature: { source: string; version: string };
+}
+
+export declare function getHorizonsObject(
+  object: string,
+  options?: { by?: "name" | "designation" },
+): Promise<HorizonsObjectResponse>;
+
+export type HorizonsTimeOptions<T> =
+  | { times: readonly T[]; start?: never; stop?: never; step?: never }
+  | { times?: never; start: T; stop: T; step: string };
+
+export interface HorizonsSite {
+  latitude: number;
+  longitude: number;
+  elevationKm?: number;
+}
+
+export interface HorizonsEphemerisRow {
+  calendarDate: string;
+  raDeg: number | null;
+  decDeg: number | null;
+  magnitude: number | null;
+  distanceAu: number | null;
+  rangeRateKmPerSec: number | null;
+  solarElongationDeg: number | null;
+  pointingUncertainty3SigmaArcsec: number | null;
+  azimuthDeg?: number | null;
+  altitudeDeg?: number | null;
+  airmass?: number | null;
+}
+
+export interface HorizonsOrbitRow {
+  calendarDate: string;
+  julianDate: number | null;
+  eccentricity: number | null;
+  perihelionAu: number | null;
+  inclinationDeg: number | null;
+  ascendingNodeDeg: number | null;
+  argumentOfPerihelionDeg: number | null;
+  perihelionJulianDate: number | null;
+  meanMotionDegPerDay: number | null;
+  meanAnomalyDeg: number | null;
+  trueAnomalyDeg: number | null;
+  semiMajorAxisAu: number | null;
+  aphelionAu: number | null;
+  periodDays: number | null;
+}
+
+export interface HorizonsVectorRow {
+  calendarDate: string;
+  julianDate: number | null;
+  positionKm: { x: number | null; y: number | null; z: number | null };
+  velocityKmPerSec: { x: number | null; y: number | null; z: number | null };
+}
+
+export interface HorizonsTable<Row, Scale extends "UT" | "TDB"> {
+  signature: HorizonsObjectResponse["signature"];
+  timeScale: Scale;
+  rows: Row[];
+}
+
+export type HorizonsOrbitalOptions = HorizonsTimeOptions<string> & {
+  by?: "name" | "designation";
+  center?: string;
+};
+
+export declare function getHorizonsEphemeris(
+  target: string,
+  options: HorizonsTimeOptions<string | Date> & {
+    by?: "name" | "designation";
+    site?: HorizonsSite;
+  },
+): Promise<HorizonsTable<HorizonsEphemerisRow, "UT">>;
+
+export declare function getHorizonsObservability(
+  prediction: Pick<OccultationPrediction, "date_time" | "number" | "name" |
+    "principal_designation" | "provisional_designation">,
+  site: HorizonsSite,
+): Promise<HorizonsEphemerisRow & {
+  signature: HorizonsObjectResponse["signature"];
+  timeScale: "UT";
+  azimuthDeg: number | null;
+  altitudeDeg: number | null;
+  airmass: number | null;
+}>;
+
+export declare function getHorizonsOrbit(
+  target: string,
+  options: HorizonsOrbitalOptions,
+): Promise<HorizonsTable<HorizonsOrbitRow, "TDB"> & { center: string }>;
+
+export declare function getHorizonsVectors(
+  target: string,
+  options: HorizonsOrbitalOptions & { referencePlane?: "ECLIPTIC" | "FRAME" },
+): Promise<HorizonsTable<HorizonsVectorRow, "TDB"> & {
+  center: string;
+  referencePlane: "ECLIPTIC" | "FRAME";
+}>;
+
 export declare class Asteroid extends BaseAPI {
   constructor(options?: {
     baseUrl?: string;

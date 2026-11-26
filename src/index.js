@@ -3,6 +3,13 @@ export { Prediction } from "./prediction.js";
 export { Asteroid } from "./asteroid.js";
 export { BaseAPI, DEFAULT_BASE_URL, DEFAULT_PAGE_SIZE } from "./base.js";
 export { LineASSP } from "./client.js";
+export {
+  getHorizonsObject,
+  getHorizonsEphemeris,
+  getHorizonsObservability,
+  getHorizonsOrbit,
+  getHorizonsVectors,
+} from "./horizons.js";
 
 // Processing and visualization tools
 export {

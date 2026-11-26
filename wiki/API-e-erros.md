@@ -31,3 +31,5 @@ try {
 ```
 
 As declarações TypeScript ficam em `index.d.ts`. Em JavaScript, os exemplos desta página usam os exports do pacote.
+
+As funções do [JPL Horizons](JPL-Horizons.md) também usam `OccJSError` para falhas de rede, respostas HTTP e erros reportados pelo serviço. Quando uma consulta tabular recebe uma lista de correspondências, a resposta do Horizons fica em `error.details`. Entradas inválidas podem gerar `TypeError` ou `RangeError`.

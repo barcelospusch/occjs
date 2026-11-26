@@ -1,10 +1,11 @@
 # occjs Wiki
 
-O occjs consulta predições de ocultações estelares e dados de corpos menores pela API do LIneA Solar System Portal. Cada guia inclui código e indica como executar o exemplo no repositório.
+O occjs consulta predições de ocultações estelares no LIneA Solar System Portal e dados de corpos menores no LIneA e no JPL Horizons. Os guias incluem exemplos de código.
 
 - [Primeiros passos](Primeiros-passos.md)
 - [Predições de ocultação](Predicoes.md)
 - [Catálogo de asteroides](Asteroides.md)
+- [JPL Horizons](JPL-Horizons.md)
 - [Visibilidade geográfica](Visibilidade-geografica.md)
 - [Mapas de predição](Mapas-de-predicao.md)
 - [Previsão do tempo](Previsao-do-tempo.md)

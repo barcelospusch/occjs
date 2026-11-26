@@ -28,3 +28,5 @@ console.log(await asteroid.getPredictionsByName("Chariklo", options));
 console.log(await asteroid.getPredictionsByNumber(10199, options));
 console.log(await asteroid.getPredictionsByProvisionalDesignation("1997 CU26", options));
 ```
+
+Para consultar o resumo, a efeméride ou a órbita de Chariklo no JPL, use `getHorizonsObject`, `getHorizonsEphemeris` ou `getHorizonsOrbit`. [Guia do JPL Horizons](JPL-Horizons.md)

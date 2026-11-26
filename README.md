@@ -1,8 +1,8 @@
 # occjs
 
-Versão **0.1.1**.
+Versão **0.1.2**.
 
-> Biblioteca JavaScript / TypeScript para consulta de predições de ocultações estelares e corpos menores do Sistema Solar através da API do **LIneA Solar System Portal**.
+> Biblioteca JavaScript / TypeScript para consultar predições de ocultações estelares no **LIneA Solar System Portal** e dados de corpos menores no LIneA e no **JPL Horizons**.
 > Projetada com recursos e funções equivalentes ao módulo Python oficial do LineA ([`lineaSSP`](https://solarsystem.linea.org.br/docs/user-guide/python_module/)).
 
 ---
@@ -20,6 +20,7 @@ Compatível com **Node.js >= 18**, navegadores modernos, Bun e Deno. Suporte nat
 ## Documentação
 
 - [Mapas de predição](#mapas-de-predição)
+- [Consulta ao JPL Horizons](#consulta-ao-jpl-horizons)
 - [Páginas da GitHub Wiki](wiki/Home.md)
 
 ## Mapas de predição
@@ -335,6 +336,68 @@ O clima atual não é usado como previsão para uma data futura.
 Nesta versão também foram corrigidas a paginação quando o servidor limita o
 tamanho das páginas, a validação de limites e a resposta JSON inválida nos
 subendpoints de predição.
+
+## Consulta ao JPL Horizons
+
+Os cinco helpers são exportados diretamente pelo pacote. O [guia do Horizons na wiki](wiki/JPL-Horizons.md) detalha os formatos de entrada, as unidades e o tratamento de erros.
+
+Use `getHorizonsObject` para consultar o resumo de um corpo menor pelo nome ou pela designação.
+
+```js
+import { getHorizonsObject } from "@occjs/occjs";
+
+const apophis = await getHorizonsObject("Apophis");
+const asteroid = await getHorizonsObject("1999 AN10", { by: "designation" });
+
+console.log(apophis.result);
+console.log(asteroid.result);
+```
+
+A função retorna o texto original em `result` e a origem e versão da API em
+`signature`. Se o Horizons devolver uma lista de correspondências, ela fica em
+`result`. Falhas de consulta reportadas pela API geram `OccJSError`.
+
+As consultas abaixo retornam dados numéricos com unidades nos nomes dos campos.
+
+```js
+import {
+  getHorizonsEphemeris,
+  getHorizonsObservability,
+  getHorizonsOrbit,
+  getHorizonsVectors,
+} from "@occjs/occjs";
+
+const site = { latitude: -23.55, longitude: -46.63, elevationKm: 0.76 };
+const ephemeris = await getHorizonsEphemeris("Apophis", {
+  site,
+  start: "2029-04-13T00:00:00Z",
+  stop: "2029-04-13T01:00:00Z",
+  step: "10 min",
+});
+
+const local = await getHorizonsObservability({
+  name: "Apophis",
+  date_time: "2029-04-13T00:00:00Z",
+}, site);
+
+const options = { times: ["2029-04-13T00:00:00"] };
+const orbit = await getHorizonsOrbit("Apophis", options);
+const vectors = await getHorizonsVectors("Apophis", options);
+
+console.log(ephemeris.rows[0], local.altitudeDeg, orbit.rows[0], vectors.rows[0]);
+```
+
+- Use `times` para instantes específicos ou `start`, `stop` e `step` para uma série.
+- A efeméride usa UT e assume o geocentro quando `site` é omitido. Com um local,
+  a longitude é positiva a leste. A observabilidade descreve o alvo no instante
+  da predição, enquanto a geometria da ocultação continua no `geofilter`.
+- As consultas orbitais usam TDB e recebem datas ISO sem fuso, interpretadas
+  nessa escala. O centro padrão é o Sol (`500@10`). Os vetores são geométricos
+  em km e km/s, no plano eclíptico por padrão, com opção `referencePlane: "FRAME"`
+  para usar o plano do referencial ICRF.
+- Os campos numéricos indisponíveis ficam como `null`. A incerteza angular de
+  3 sigma descreve a posição do alvo no céu. A faixa de incerteza da ocultação
+  depende também da posição da estrela e da geometria do evento.
 
 ## Carta celeste
 

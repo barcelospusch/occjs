@@ -16,4 +16,6 @@ console.log(await prediction.byName("Chariklo", { limit: 5 }));
 
 Use `prediction.getPrediction(id)` para obter um evento específico. Consulte [Mapas de predição](Mapas-de-predicao.md) para visualizar a trajetória da sombra.
 
+Para obter a efeméride ou os elementos orbitais de um corpo menor, consulte o [guia do JPL Horizons](JPL-Horizons.md).
+
 O [README do repositório](https://github.com/barcelospusch/occjs#readme) inclui exemplos de filtros geográficos, relatórios e previsão do tempo.

@@ -63,3 +63,5 @@ if (event) {
   console.log(await getOccultationMap(event.id));
 }
 ```
+
+Com a predição em mãos, use `getHorizonsObservability(event, site)` para consultar onde o alvo estará no céu naquele horário para um local de observação. [Exemplo de observabilidade](JPL-Horizons.md#observabilidade-de-uma-predição)

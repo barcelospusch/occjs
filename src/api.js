@@ -16,6 +16,10 @@ export async function request(endpoint, params = {}) {
     );
   }
 
+  return requestJson(url, "LineA");
+}
+
+export async function requestJson(url, service) {
   let response;
 
   try {
@@ -24,7 +28,7 @@ export async function request(endpoint, params = {}) {
     });
   } catch (error) {
     throw new OccJSError(
-      `Could not connect to the LineA API: ${error.message}`,
+      `Could not connect to the ${service} API: ${error.message}`,
     );
   }
 
@@ -32,7 +36,7 @@ export async function request(endpoint, params = {}) {
     const details = await response.text();
 
     throw new OccJSError(
-      `LineA API returned HTTP ${response.status}`,
+      `${service} API returned HTTP ${response.status}`,
       response.status,
       details,
     );
@@ -42,7 +46,7 @@ export async function request(endpoint, params = {}) {
     return await response.json();
   } catch {
     throw new OccJSError(
-      "LineA API returned an invalid JSON response.",
+      `${service} API returned an invalid JSON response.`,
       response.status,
     );
   }
